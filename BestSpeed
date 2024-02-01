@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 31 12:18:10 2024
+
+@author: benja
+"""
+
+
+import pandas as pd
+
+input_csv= 'BatterVelo2123.csv'
+
+df=pd.read_csv(input_csv)
+
+grouped_df=df.groupby(['batter','Year'])
+
+result_df = grouped_df.apply(lambda x: pd.Series({
+    'average_top_50_percent_launch_speed': x.nlargest(int(len(x) * 0.5), 'launch_speed')['launch_speed'].mean(),
+    'num_observations': len(x)
+}))
+
+result_df.reset_index(inplace=True)
+
+result_csv= 'player_year_velo.csv'
+
+result_df.to_csv(result_csv, index=False)
